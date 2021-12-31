@@ -104,6 +104,7 @@ contract IDO is ReentrancyGuard, Context, Ownable {
     uint public hardcap;
     uint public purchasedTokens;
     bool public unlock;
+    bool public allowNonWhitelist = false;
 
     
     address[] private whitelistAddresses;
@@ -162,7 +163,9 @@ contract IDO is ReentrancyGuard, Context, Ownable {
 
     function _preValidatePurchase(address beneficiary, uint256 weiAmount) internal view {
         require(beneficiary != address(0), "Presale: beneficiary is the zero address");
+        if (allowNonWhitelist == false) {
         require(_whitelisted[beneficiary], "You are not in whitelist");
+        }
         require(weiAmount != 0, "Presale: weiAmount is 0");
         require(weiAmount >= minPurchase, 'have to send at least: minPurchase');
         require(_weiRaised + weiAmount <= hardcap, "Exceeding hardcap");
@@ -180,6 +183,10 @@ contract IDO is ReentrancyGuard, Context, Ownable {
 
     function _forwardFunds(uint256 amount) external onlyOwner {
         payable(_wallet).transfer(amount);
+    }
+    function startIdoRound2(bool _trueorfalse) public onlyOwner{
+        require(_weiRaised <= hardcap);
+        allowNonWhitelist = _trueorfalse;
     }
     
     function checkContribution(address addr) public view returns(uint256){
