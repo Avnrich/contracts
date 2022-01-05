@@ -72,7 +72,6 @@ contract avnStaking is Owned {
     uint public totalStaked;
     uint public stakingTaxRate; 
     uint public stakeTime;
-    uint public registrationTax;
     uint public dailyROI;                         //100 = 1%
     uint public unstakingTaxRate;                   //10 = 1%
     uint public minimumStakeValue;
@@ -97,7 +96,6 @@ contract avnStaking is Owned {
         uint _stakingTaxRate, 
         uint _unstakingTaxRate,
         uint _dailyROI,
-        uint _registrationTax,
         uint _stakeTime,
         uint _minimumStakeValue) public {
             
@@ -106,7 +104,6 @@ contract avnStaking is Owned {
         unstakingTaxRate = _unstakingTaxRate;
         dailyROI = _dailyROI;
         stakeTime = _stakeTime;
-        registrationTax = _registrationTax;
         minimumStakeValue = _minimumStakeValue;
     }
     
@@ -190,10 +187,6 @@ contract avnStaking is Owned {
     
     function setDailyROI(uint _dailyROI) external onlyOwner() {
         dailyROI = _dailyROI;
-    }
-    
-    function setRegistrationTax(uint _registrationTax) external onlyOwner() {
-        registrationTax = _registrationTax;
     }
     
     function setMinimumStakeValue(uint _minimumStakeValue) external onlyOwner() {
