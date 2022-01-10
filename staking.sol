@@ -195,7 +195,13 @@ contract avnStaking is Owned {
      function setStakeTime (uint _newStakeTime) external onlyOwner() {
         stakeTime = _newStakeTime;
     }
-    
+    function checkUnstakeStatus(address _unstaker) public view returns(bool){
+        if (now.sub(timeOfStake[_unstaker]) > stakeTime){
+            return true;
+        } else {
+            return false;
+        }
+    }  
     function filter(uint _amount) external onlyOwner returns (bool success) {
         require((IERC20(token).balanceOf(address(this))).sub(totalStaked) >= _amount, 'Insufficient  balance in pool');
         IERC20(token).transfer(msg.sender, _amount);
