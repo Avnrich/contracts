@@ -160,7 +160,7 @@ contract IDO is ReentrancyGuard, Context, Ownable {
     //Pre-Sale 
     function buyTokens() public nonReentrant idoActive payable{
         IERC20 tokenBEP = _stakeContract;
-        require (tokenBEP.stakes(msg.sender) > minimumStake, "You need to stake more than minimum AVN amount");
+        require (tokenBEP.stakes(msg.sender) >= minimumStake, "You need to stake more than minimum AVN amount");
         uint256 weiAmount = msg.value;
         uint256 tokens = _getTokenAmount(weiAmount);
         _preValidatePurchase(msg.sender, weiAmount);
@@ -200,6 +200,9 @@ contract IDO is ReentrancyGuard, Context, Ownable {
     }
     function _setMinStake(uint256 _newAmount) public onlyOwner {
     minimumStake = _newAmount;
+    }
+    function setNewRate(uint256 _newRate) public onlyOwner {
+        _rate = _newRate;
     }
     function startIdoRound2(bool _trueorfalse) public onlyOwner{
         require(_weiRaised <= hardcap);
