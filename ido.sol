@@ -263,10 +263,15 @@ contract IDO is ReentrancyGuard, Context, Ownable {
          _contributions[msg.sender] = 0;
     }
     function addContribution(address _address, uint256 _bnbAmount) public onlyOwner{
-        uint256 bnbAmount = _bnbAmount;
+        uint256 bnbAmount = _bnbAmount ;
         _contributions[_address] = _contributions[_address] + bnbAmount;
  
     }    
+    function subContribution(address _address, uint256 _bnbAmount) public onlyOwner{
+        uint256 bnbAmount = _bnbAmount ;
+        _contributions[_address] = _contributions[_address] - bnbAmount;
+ 
+    } 
     function unlockToken(bool _input) public {
         unlock = _input;
     }
