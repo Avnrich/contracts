@@ -268,9 +268,8 @@ contract IDO is ReentrancyGuard, Context, Ownable {
         IERC20(_token).transfer(msg.sender, _ptokens);
         claimed[msg.sender] = true;
     }
-    function checkIdo(address _address) public returns(uint) {
-        _ptokens = IERC20(_ido).checkContribution(_address);
-        return _ptokens;
+    function checkIdo(address _address) public view returns(uint256) {
+        return IERC20(_ido).checkContribution(_address);
     }
     function claimStatus() public view returns(bool){
         return claimed[msg.sender];
