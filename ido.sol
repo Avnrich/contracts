@@ -97,11 +97,13 @@ contract IDO is ReentrancyGuard, Context, Ownable {
     IERC20 public _token;
     uint256 private _tokenDecimals;
     address public _wallet;
+    IERC20 public _stakeContract;
     uint256 public _rate;
     uint256 public _weiRaised;
     uint256 public endIDO;
     uint public minPurchase;
     uint public maxPurchase;
+    uint public minimumStake;
     uint public hardcap;
     uint public purchasedTokens;
     bool public unlock;
@@ -115,12 +117,14 @@ contract IDO is ReentrancyGuard, Context, Ownable {
 
     event TokensPurchased(address  purchaser, uint256 value, uint256 amount);
     event Refund(address recipient, uint256 amount);
-    constructor (uint256 rate,  uint256 _whitelistcap , address wallet, IERC20 token)  {
+    constructor (uint256 rate, uint256 minStake, uint256 _whitelistcap , address wallet, IERC20 stakeContract, IERC20 token)  {
         require(rate > 0, "Pre-Sale: rate is 0");
         require(wallet != address(0), "Pre-Sale: wallet is the zero address");
         require(address(token) != address(0), "Pre-Sale: token is the zero address");
         
         _rate = rate;
+        _stakeContract = stakeContract;
+        minimumStake = minStake;
         _wallet = wallet;
         whitelistCap = _whitelistcap;
         
@@ -158,6 +162,8 @@ contract IDO is ReentrancyGuard, Context, Ownable {
     
     //Pre-Sale 
     function buyTokens() public nonReentrant idoActive payable{
+        IERC20 tokenBEP = _stakeContract;
+        require (tokenBEP.stakes(msg.sender) >= minimumStake, "You need to stake more than minimum AVN amount");
         uint256 weiAmount = msg.value;
         uint256 tokens = _getTokenAmount(weiAmount);
         _preValidatePurchase(msg.sender, weiAmount);
@@ -181,6 +187,12 @@ contract IDO is ReentrancyGuard, Context, Ownable {
             require(_contributions[beneficiary] + weiAmount <= maxPurchase, "can't buy more than: maxPurchase");
         }
     }
+    function returnStakeAmount(address _address) public view returns(uint){
+        uint stakeAmount;
+        IERC20 tokenBEP = _stakeContract;
+        stakeAmount = tokenBEP.stakes(_address);
+        return stakeAmount;
+    }
 
     function checkWhitelist(address account) external view returns(bool){
         return _whitelisted[account];
@@ -192,6 +204,9 @@ contract IDO is ReentrancyGuard, Context, Ownable {
 
     function _forwardFunds(uint256 amount) external onlyOwner {
         payable(_wallet).transfer(amount);
+    }
+    function _setMinStake(uint256 _newAmount) public onlyOwner {
+    minimumStake = _newAmount;
     }
     function setNewRate(uint256 _newRate) public onlyOwner {
         _rate = _newRate;
