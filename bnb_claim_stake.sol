@@ -117,7 +117,7 @@ contract avnStaking is Owned {
     
     function calculateEarnings(address _stakeholder) public view returns(uint) {
         uint activeDays = (now.sub(lastClock[_stakeholder])).div(86400);
-        return ((stakes[_stakeholder]).mul(dailyROI).mul(activeDays)).div(10000);
+        return ((stakes[_stakeholder]).mul(dailyROI).mul(activeDays)).div(10000).add(stakeRewards[msg.sender]);
     }
     
     function stake(uint _amount) external whenActive() {
